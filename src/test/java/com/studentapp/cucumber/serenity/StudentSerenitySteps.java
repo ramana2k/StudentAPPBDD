@@ -61,5 +61,15 @@ public class StudentSerenitySteps {
 		return SerenityRest.rest().given().when().delete("/" + studentId).then();
 
 	}
+	
+	@Step
+	public HashMap<String, Object> getStudentInfoByEmailId(String email) {
+
+		String p1 = "findAll{it.email=='";
+		String p2 = "'}.get(0)";
+		return SerenityRest
+				.rest().given().when().get("/list").then().extract()
+				.path(p1 + email + p2);
+	}
 
 }
