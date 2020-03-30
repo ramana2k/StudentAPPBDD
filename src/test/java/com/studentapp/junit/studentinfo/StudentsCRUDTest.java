@@ -13,6 +13,7 @@ import org.junit.runners.MethodSorters;
 
 import com.studentapp.cucumber.serenity.StudentSerenitySteps;
 import com.studentapp.testbase.TestBase;
+import com.studentapp.utils.ReusableSpecifications;
 import com.studentapp.utils.TestUtils;
 
 import net.serenitybdd.junit.runners.SerenityRunner;
@@ -40,7 +41,8 @@ public class StudentsCRUDTest extends TestBase {
 		courses.add("Java");
 		courses.add("C++");
 		steps.createStudent(firstName, lastName, email, programme, courses).
-		statusCode(201);
+		statusCode(201)
+		.spec(ReusableSpecifications.getGenericResponseSpec());
 		
 	}
 

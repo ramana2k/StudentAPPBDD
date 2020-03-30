@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.studentapp.model.StudentClass;
+import com.studentapp.utils.ReusableSpecifications;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
@@ -22,7 +23,8 @@ public class StudentSerenitySteps {
 		student.setEmail(email);
 		student.setCourses(courses);
 
-		return SerenityRest.rest().given().contentType(ContentType.JSON).when().body(student).post().then();
+		return SerenityRest.rest().given().spec(ReusableSpecifications.getGenericRequestSpec())
+				.when().body(student).post().then();
 	}
 
 	@Step("Getting the student information with firstName : {0}")
@@ -50,7 +52,7 @@ public class StudentSerenitySteps {
 		student.setProgramme(programme);
 		student.setEmail(email);
 		student.setCourses(courses);
-		return SerenityRest.rest().given().contentType(ContentType.JSON).when().body(student).put("/" + studentId)
+		return SerenityRest.rest().given().spec(ReusableSpecifications.getGenericRequestSpec()).when().body(student).put("/" + studentId)
 				.then();
 	}
 
