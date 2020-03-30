@@ -42,7 +42,7 @@ public class SecondSerenityTest {
 	
 	@Test
 	public void errorTest() {
-		System.out.println("Arthimetic exception"+5/0);
+	//	System.out.println("Arthimetic exception"+5/0);
 
 	}
 	

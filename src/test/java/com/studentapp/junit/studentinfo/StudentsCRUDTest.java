@@ -1,20 +1,24 @@
 package com.studentapp.junit.studentinfo;
 
+import static org.hamcrest.Matchers.hasValue;
+import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
-import com.studentapp.model.StudentClass;
+import com.studentapp.cucumber.serenity.StudentSerenitySteps;
 import com.studentapp.testbase.TestBase;
 import com.studentapp.utils.TestUtils;
 
-import io.restassured.http.ContentType;
 import net.serenitybdd.junit.runners.SerenityRunner;
-import net.serenitybdd.rest.SerenityRest;
+import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.annotations.Title;
+
 
 @RunWith(SerenityRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -24,8 +28,10 @@ public class StudentsCRUDTest extends TestBase {
 	static String lastName="SMOKEUSER_LN"+TestUtils.getRandomValue();
 	static String programme="computerScience";
 	static String email=TestUtils.getRandomValue()+firstName+lastName+"@gmail.com";
+    static int studentId;
 
-
+	@Steps
+	StudentSerenitySteps steps;
 	@Test
 	@Title("This test will create a new student")
 	public void test001()
@@ -33,36 +39,49 @@ public class StudentsCRUDTest extends TestBase {
 		ArrayList<String> courses= new ArrayList<String>();
 		courses.add("Java");
 		courses.add("C++");
-		StudentClass student= new StudentClass();
-		student.setFirstName(firstName);
-		student.setLastName(lastName);
-		student.setProgramme(programme);
-		student.setEmail(email);
-		student.setCourses(courses);
-		
-		SerenityRest
-		.given()
-		.contentType(ContentType.JSON)
-		.when()
-		.body(student)
-		.post()
-		.then()
-		.statusCode(201);
+		steps.createStudent(firstName, lastName, email, programme, courses).
+		statusCode(201);
 		
 	}
-	
+
 @Test
 @Title("Verify the newly created student is added or not")
 public void test002()
+
 {
-	SerenityRest
-	.given()
-	.when()
-	.get("/list")
-	.then()
-    .log()
-    .all()
-    .statusCode(200);
+
+	HashMap<String,Object> map= steps.getStudentinfoByFirstName(firstName);
+	assertThat(map,hasValue(firstName));
+	studentId =(int) map.get("id");
 }
 
+
+@Test
+@Title("Update the newly created student with _updated")
+public void test003()
+
+
+{
+	
+	String p1="findAll{it.firstName=='";
+	String p2="'}.get(0)";
+	ArrayList<String> courses= new ArrayList<String>();
+	courses.add("Java");
+	courses.add("C++");
+	firstName=firstName+"_updated";
+
+	steps.updateStudent(firstName,lastName,email,programme,courses,studentId).statusCode(200);
+	HashMap<String,Object> map= steps.getStudentinfoByFirstName(firstName);
+	assertThat(map,hasValue(firstName));
+}
+
+@Test
+@Title("Delete the newly created student")
+public void test004()
+
+{
+	steps.deleteStudent(studentId).statusCode(204);
+	steps.getStudentinfoById(studentId).statusCode(404);
+
+}
 }
